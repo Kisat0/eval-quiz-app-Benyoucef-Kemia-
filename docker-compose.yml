@@ -57,11 +57,15 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    environment:
+      BACKEND_URL: "http://backend:3007"
     ports:
       - "8087:8080"
     read_only: true
     tmpfs:
       - /tmp
+      # nginx (uid/gid 101) y écrit la configuration générée depuis le template
+      - /etc/nginx/conf.d:uid=101,gid=101,mode=0755
     cap_drop:
       - ALL
     security_opt:

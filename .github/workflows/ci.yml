@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-scan:
+    name: build-and-scan (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: backend
+            context: backend
+          - name: frontend
+            context: .
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build de l'image
+        run: docker build -t quiz-${{ matrix.name }}:ci ${{ matrix.context }}
+
+      - name: Export de l'image
+        run: docker save quiz-${{ matrix.name }}:ci -o "${{ runner.temp }}/image.tar"
+
+      - name: Lecture de la version de Trivy
+        id: trivy
+        run: echo "version=$(tr -d '[:space:]' < .trivy-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Scan Trivy (bloquant sur CRITICAL)
+        run: |
+          docker run --rm \
+            -v "${{ runner.temp }}:/work" \
+            aquasec/trivy:${{ steps.trivy.outputs.version }} \
+            image --input /work/image.tar --severity CRITICAL --exit-code 1
+
+  compose-config:
+    name: compose-config
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validation de docker-compose.yml
+        run: docker compose --env-file .env.example config -q

@@ -92,10 +92,18 @@ docker push "$FRONTEND_IMAGE"
 # ---- 3. Environnement Container Apps ------------------------------------------
 log "Environnement Container Apps $ENV_NAME"
 if ! az containerapp env show --name "$ENV_NAME" --resource-group "$RG" --output none 2>/dev/null; then
-  # Crée aussi un espace Log Analytics dans le même groupe (logs des révisions)
+  # Mode WorkloadProfiles (profil "Consumption" facturé à l'usage) et non le mode
+  # "Express" par défaut : Express refuse l'identité managée pour tirer depuis ACR
+  # (erreur ExpressRegistrySystemIdentityNotSupported).
+  # Crée aussi un espace Log Analytics dans le même groupe (logs des révisions).
   az containerapp env create --name "$ENV_NAME" --resource-group "$RG" \
-    --location "$LOCATION" --output none
+    --location "$LOCATION" --environment-mode WorkloadProfiles \
+    --logs-destination log-analytics --output none
 fi
+ENV_MODE="$(az containerapp env show --name "$ENV_NAME" --resource-group "$RG" \
+  --query properties.environmentMode -o tsv)"
+[[ "$ENV_MODE" != "Express" ]] || fail "l'environnement $ENV_NAME est en mode Express \
+(incompatible avec l'identité managée ACR) : supprimez-le puis relancez le script"
 
 # ---- 4. Backend (ingress interne) --------------------------------------------
 # Les secrets sont stockés comme secrets de la Container App et injectés

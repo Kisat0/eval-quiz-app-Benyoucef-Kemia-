@@ -1,7 +1,7 @@
-# Template nginx : ${BACKEND_URL} est remplacé au démarrage du conteneur
-# par le script 20-envsubst-on-templates.sh de l'image nginx.
-#   - Docker Compose        : BACKEND_URL=http://backend:3007
-#   - Azure Container Apps  : BACKEND_URL=http://<nom-app-backend> (ingress interne, port 80)
+upstream backend {
+    least_conn;
+    server ${BACKEND_HOST}:${BACKEND_PORT};
+}
 
 server {
     listen 8080;
@@ -9,24 +9,21 @@ server {
 
     root /usr/share/nginx/html;
 
-    # Main app
     location / {
         index index.html;
         try_files $uri $uri/ /index.html;
     }
 
-    # Admin page - serve gestion-quiz.html for /gestion-quiz route
     location = /gestion-quiz {
         try_files /gestion-quiz.html =404;
     }
 
-    # API proxy to backend
-    # Pas de "proxy_set_header Host $host" : l'en-tête Host reste celui du backend.
-    # Sur Container Apps, le proxy Envoy route les requêtes selon Host ;
-    # transmettre l'hôte du frontend enverrait la requête au mauvais service.
     location /api/ {
-        proxy_pass ${BACKEND_URL};
+        proxy_pass ${BACKEND_SCHEME}://backend;
         proxy_http_version 1.1;
+        proxy_ssl_server_name on;
+        proxy_ssl_name ${BACKEND_HOST};
+        proxy_set_header Host ${BACKEND_HOST};
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -35,9 +32,11 @@ server {
         proxy_read_timeout 60s;
     }
 
-    # Health check endpoint
     location /health {
-        proxy_pass ${BACKEND_URL};
+        proxy_pass ${BACKEND_SCHEME}://backend;
         proxy_http_version 1.1;
+        proxy_ssl_server_name on;
+        proxy_ssl_name ${BACKEND_HOST};
+        proxy_set_header Host ${BACKEND_HOST};
     }
 }

@@ -1,0 +1,3 @@
+Nom            Serveur                   Sku    Region         Admin
+-------------  ------------------------  -----  -------------  -------
+kisat0quizacr  kisat0quizacr.azurecr.io  Basic  francecentral  False

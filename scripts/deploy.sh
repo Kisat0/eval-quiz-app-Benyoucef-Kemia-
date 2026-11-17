@@ -147,9 +147,14 @@ else
 fi
 
 # ---- 5. Frontend (ingress externe) --------------------------------------------
+# Variables du template nginx du groupe (nginx/default.conf.template).
 # Dans un même environnement, une app joint une autre par http://<nom-app>
-# (port 80, routé par Envoy vers le target-port 3007 du backend).
-FRONTEND_ENV=("BACKEND_URL=http://$BACKEND_APP")
+# (port 80, routé par Envoy vers le target-port 3007 du backend interne).
+FRONTEND_ENV=(
+  "BACKEND_SCHEME=http"
+  "BACKEND_HOST=$BACKEND_APP"
+  "BACKEND_PORT=80"
+)
 
 log "Container App frontend $FRONTEND_APP ($FRONTEND_IMAGE)"
 if az containerapp show --name "$FRONTEND_APP" --resource-group "$RG" --output none 2>/dev/null; then

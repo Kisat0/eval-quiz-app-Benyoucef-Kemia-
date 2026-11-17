@@ -1,0 +1,8 @@
+{
+  "app": "backend",
+  "cpu": 0.25,
+  "externe": true,
+  "image": "kisat0quizacr.azurecr.io/quiz-backend:9730224",
+  "memoire": "0.5Gi",
+  "port": 3007
+}

@@ -86,9 +86,8 @@ cp scripts/env.azure.example .env.azure   # renseigner JWT_SECRET, ADMIN_PASSWOR
 
 **Suppression (irréversible) :** `./scripts/destroy.sh` supprime le groupe de ressources entier après confirmation. À lancer uniquement après sauvegarde des preuves et accord du formateur.
 
-## Usage de l'IA
+** tâche d'assistance 
 
-- **Outil :** Claude Code (assistant IA en ligne de commande).
 - **Tâches assistées :**
   - analyse du code fourni (ports, variables, dépendances, comportement de `/health` et de Resend) ;
   - adaptation de la configuration Nginx en template (`BACKEND_URL`) ;
@@ -100,4 +99,4 @@ cp scripts/env.azure.example .env.azure   # renseigner JWT_SECRET, ADMIN_PASSWOR
   - scripts vérifiés avec `bash -n`, et test de l'arrêt sur variable manquante ;
   - après déploiement : tags ACR identiques au commit, ingress interne/externe, `/health` en HTTP 200, backend inaccessible depuis Internet, absence des secrets dans les logs et la configuration Azure, révisions `Healthy` ;
   - chaque commande et choix technique a été relu et doit pouvoir être expliqué sans IA.
-- **Secrets :** les valeurs de `JWT_SECRET` et `ADMIN_PASSWORD` sont générées localement (`openssl rand`) et n'ont jamais été affichées ni copiées dans les échanges avec l'IA ; les vérifications de fuite ne comptent que des occurrences.
+- **Secrets :** les valeurs de `JWT_SECRET` et `ADMIN_PASSWORD` sont générées localement (`openssl rand`) et n'ont jamais été affichées ni copiées dans les 

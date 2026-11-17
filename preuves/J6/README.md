@@ -19,5 +19,5 @@ Workflow : `.github/workflows/cd.yml`. Connexion Azure par OIDC, build, scan Tri
 
 ## Liens
 
-- PR de démo : (colle l'URL ici)
-- Exécution de la CD : (colle l'URL ici)
+- PR de démo : (https://github.com/Kisat0/eval-quiz-app-Benyoucef-Kemia-/pull/12)
+- Exécution de la CD : (https://github.com/Kisat0/eval-quiz-app-Benyoucef-Kemia-/actions/workflows/cd.yml)

@@ -59,8 +59,11 @@ Lisez les documents dans cet ordre :
 | Jalon | Preuves |
 |---|---|
 | J1 — Conteneurisation locale | [preuves/J1](preuves/J1/README.md), [architecture locale](docs/architecture-locale.md) |
-| J3 — Azure CLI et ACR | [preuves/J3](preuves/J3/README.md) |
+| J2 — Sécurité des images | [preuves/J2](preuves/J2/README.md) |
+| J3 — Azure CLI et ACR | [preuves/J3](preuves/J3/) |
 | J4 — Azure Container Apps | [preuves/J4](preuves/J4/README.md) |
+| J5 — PostgreSQL cloud | [preuves/J5](preuves/J5/README.md) |
+| Déploiement par `scripts/deploy.sh` (J3 à J5) | [preuves/deploiement-kemia](preuves/deploiement-kemia/README.md) |
 
 ## Lancement local (Docker Compose)
 

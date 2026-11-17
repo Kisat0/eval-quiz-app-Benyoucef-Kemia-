@@ -1,0 +1,87 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-azure
+  cancel-in-progress: false
+
+env:
+  ACR_NAME: kisat0quizacr
+  RESOURCE_GROUP: rg-quiz-app
+
+jobs:
+  build-scan-push-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Tag de l'image (commit)
+        run: echo "TAG=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Build des images
+        run: |
+          docker build -t quiz-backend:cd backend
+          docker build -t quiz-frontend:cd .
+
+      - name: Lecture de la version de Trivy
+        id: trivy
+        run: echo "version=$(tr -d '[:space:]' < .trivy-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Scan Trivy (bloquant sur CRITICAL)
+        run: |
+          for img in backend frontend; do
+            docker save quiz-$img:cd -o "$RUNNER_TEMP/$img.tar"
+            docker run --rm -v "$RUNNER_TEMP:/work" \
+              aquasec/trivy:${{ steps.trivy.outputs.version }} \
+              image --input /work/$img.tar --severity CRITICAL --exit-code 1
+          done
+
+      - name: Connexion à Azure (OIDC)
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Connexion à l'ACR
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Publication des images dans l'ACR
+        run: |
+          for img in backend frontend; do
+            docker tag quiz-$img:cd "$ACR_NAME.azurecr.io/quiz-$img:$TAG"
+            docker push "$ACR_NAME.azurecr.io/quiz-$img:$TAG"
+          done
+
+      - name: Extension Container Apps
+        run: az extension add --name containerapp --upgrade --yes
+
+      - name: Mise à jour des Container Apps
+        run: |
+          for app in backend frontend; do
+            for attempt in 1 2 3; do
+              az containerapp update -n "$app" -g "$RESOURCE_GROUP" \
+                --image "$ACR_NAME.azurecr.io/quiz-$app:$TAG" -o none && break
+              echo "Échec ($attempt/3), nouvel essai dans 30 s"
+              sleep 30
+              if [ "$attempt" = 3 ]; then exit 1; fi
+            done
+          done
+
+      - name: Vérification des révisions et de /health
+        run: |
+          az containerapp revision list -n backend -g "$RESOURCE_GROUP" -o table
+          az containerapp revision list -n frontend -g "$RESOURCE_GROUP" -o table
+          sleep 60
+          FQDN=$(az containerapp show -n frontend -g "$RESOURCE_GROUP" \
+            --query properties.configuration.ingress.fqdn -o tsv)
+          curl -fsS -m 20 "https://$FQDN/health"

@@ -49,3 +49,55 @@ Lisez les documents dans cet ordre :
 - Versionnez les fichiers de configuration, les scripts et les workflows **que vous produisez**.
 - Ne commitez jamais de mots de passe, URL PostgreSQL contenant des identifiants, clés API, secrets GitHub/GitLab ou fichiers `.env` réels.
 - Une démonstration validée reste acquise même si les ressources cloud sont supprimées ensuite.
+
+---
+
+# Travail du groupe
+
+## Preuves par jalon
+
+| Jalon | Preuves |
+|---|---|
+| J1 — Conteneurisation locale | [preuves/J1](preuves/J1/README.md), [architecture locale](docs/architecture-locale.md) |
+| J3 — Azure CLI et ACR | [preuves/J3](preuves/J3/README.md) |
+| J4 — Azure Container Apps | [preuves/J4](preuves/J4/README.md) |
+
+## Lancement local (Docker Compose)
+
+```bash
+cp .env.example .env      # puis remplacer JWT_SECRET et ADMIN_PASSWORD
+docker compose up -d --build --wait
+```
+
+Application : http://localhost:8087 — administration : http://localhost:8087/gestion-quiz
+
+## Déploiement Azure
+
+**Prérequis :** Azure CLI connecté (`az login`), Docker, Git, abonnement autorisant la région `francecentral`.
+
+```bash
+cp scripts/env.azure.example .env.azure   # renseigner JWT_SECRET, ADMIN_PASSWORD, RESEND_API_KEY
+./scripts/deploy.sh                        # crée ou met à jour toutes les ressources
+```
+
+- `deploy.sh` est idempotent : relancé, il construit des images taguées avec le commit courant, les pousse dans ACR et crée une nouvelle révision des Container Apps.
+- Les paramètres (région, noms, nombre de réplicas) sont surchargeables par variables d'environnement, voir `scripts/env.azure.example`.
+- `.env.azure` est ignoré par Git ; aucun secret n'est écrit dans les scripts.
+
+**Suppression (irréversible) :** `./scripts/destroy.sh` supprime le groupe de ressources entier après confirmation. À lancer uniquement après sauvegarde des preuves et accord du formateur.
+
+## Usage de l'IA
+
+- **Outil :** Claude Code (assistant IA en ligne de commande).
+- **Tâches assistées :**
+  - analyse du code fourni (ports, variables, dépendances, comportement de `/health` et de Resend) ;
+  - adaptation de la configuration Nginx en template (`BACKEND_URL`) ;
+  - rédaction de `scripts/deploy.sh` et `scripts/destroy.sh` ;
+  - diagnostic des incidents de déploiement (timeout de push, environnement Container Apps en mode Express) ;
+  - mise en forme des preuves J3/J4.
+- **Vérifications réalisées :**
+  - stack Compose relancée après chaque modification (conteneurs `healthy`, routes `/`, `/health`, `/gestion-quiz` en 200, persistance après `down`/`up`) ;
+  - scripts vérifiés avec `bash -n`, et test de l'arrêt sur variable manquante ;
+  - après déploiement : tags ACR identiques au commit, ingress interne/externe, `/health` en HTTP 200, backend inaccessible depuis Internet, absence des secrets dans les logs et la configuration Azure, révisions `Healthy` ;
+  - chaque commande et choix technique a été relu et doit pouvoir être expliqué sans IA.
+- **Secrets :** les valeurs de `JWT_SECRET` et `ADMIN_PASSWORD` sont générées localement (`openssl rand`) et n'ont jamais été affichées ni copiées dans les échanges avec l'IA ; les vérifications de fuite ne comptent que des occurrences.

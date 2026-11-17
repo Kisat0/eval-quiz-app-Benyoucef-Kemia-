@@ -1,0 +1,22 @@
+{"TimeStamp": "2026-11-17T13:29:33.5013", "Log": "Connecting to the container 'frontend'..."}
+{"TimeStamp": "2026-11-17T13:29:33.66261", "Log": "Successfully Connected to container: 'frontend' [Revision: 'frontend--latest', Replica: 'frontend--latest-302fc8d0-34cc-4427-a207-4068d8cd2aab']"}
+{"TimeStamp": "2026-11-17T13:28:38.6533205+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh"}
+{"TimeStamp": "2026-11-17T13:28:38.6540599+00:00", "Log": "10-listen-on-ipv6-by-default.sh: info: ipv6 not available"}
+{"TimeStamp": "2026-11-17T13:28:38.6542903+00:00", "Log": "/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh"}
+{"TimeStamp": "2026-11-17T13:28:38.6545511+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh"}
+{"TimeStamp": "2026-11-17T13:28:38.6568623+00:00", "Log": "20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf"}
+{"TimeStamp": "2026-11-17T13:28:38.6586679+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh"}
+{"TimeStamp": "2026-11-17T13:28:38.6597209+00:00", "Log": "/docker-entrypoint.sh: Configuration complete; ready for start up"}
+{"TimeStamp": "2026-11-17T13:28:38.6725036+00:00", "Log": "2026/11/17 13:28:38 [emerg] 5#5: host not found in upstream \"backend:80\" in /etc/nginx/conf.d/default.conf:3"}
+{"TimeStamp": "2026-11-17T13:28:38.6726484+00:00", "Log": "nginx: [emerg] host not found in upstream \"backend:80\" in /etc/nginx/conf.d/default.conf:3"}
+{"TimeStamp": "2026-11-17T13:29:18.9426483+00:00", "Log": "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"}
+{"TimeStamp": "2026-11-17T13:29:18.9429697+00:00", "Log": "/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/"}
+{"TimeStamp": "2026-11-17T13:29:18.9440353+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh"}
+{"TimeStamp": "2026-11-17T13:29:18.9447955+00:00", "Log": "10-listen-on-ipv6-by-default.sh: info: ipv6 not available"}
+{"TimeStamp": "2026-11-17T13:29:18.9451637+00:00", "Log": "/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh"}
+{"TimeStamp": "2026-11-17T13:29:18.9454469+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh"}
+{"TimeStamp": "2026-11-17T13:29:18.9477381+00:00", "Log": "20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf"}
+{"TimeStamp": "2026-11-17T13:29:18.9496453+00:00", "Log": "/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh"}
+{"TimeStamp": "2026-11-17T13:29:18.950419+00:00", "Log": "/docker-entrypoint.sh: Configuration complete; ready for start up"}
+{"TimeStamp": "2026-11-17T13:29:18.9710865+00:00", "Log": "2026/11/17 13:29:18 [emerg] 5#5: host not found in upstream \"backend:80\" in /etc/nginx/conf.d/default.conf:3"}
+{"TimeStamp": "2026-11-17T13:29:18.9712451+00:00", "Log": "nginx: [emerg] host not found in upstream \"backend:80\" in /etc/nginx/conf.d/default.conf:3"}

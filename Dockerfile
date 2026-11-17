@@ -8,7 +8,8 @@ RUN npm run build
 FROM nginxinc/nginx-unprivileged:1.30.6-alpine
 USER root
 RUN apk upgrade --no-cache
-ENV BACKEND_HOST=backend \
+ENV BACKEND_SCHEME=http \
+    BACKEND_HOST=backend \
     BACKEND_PORT=3007 \
     NGINX_ENVSUBST_FILTER=BACKEND_
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template

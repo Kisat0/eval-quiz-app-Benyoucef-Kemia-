@@ -1,3 +1,3 @@
 CreatedTime                  Active    Replicas    TrafficWeight    HealthState    ProvisioningState    Name
 ---------------------------  --------  ----------  ---------------  -------------  -------------------  ----------------
-2026-11-17T13:28:09.5898245  True      1           100              Unhealthy      Failed               frontend--latest
+2026-11-17T14:26:35.2120183  True      1           100              Healthy        Provisioned          frontend--latest

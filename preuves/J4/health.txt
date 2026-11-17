@@ -1,2 +1,2 @@
-
-HTTP 301
+{"status":"ok"}
+HTTP 200
